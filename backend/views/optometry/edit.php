@@ -2,6 +2,8 @@
 
 use common\helpers\Html;
 use yii\widgets\ActiveForm;
+use common\helpers\ArrayHelper;
+use backend\models\Invoices;
 
 /* @var $this yii\web\View */
 /* @var $model backend\models\Optometry */
@@ -10,6 +12,11 @@ use yii\widgets\ActiveForm;
 $this->title = '验光信息';
 $this->params['breadcrumbs'][] = ['label' => 'Optometries', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
+
+$bill_number = date('Ymd').substr(implode(NULL, array_map('ord', str_split(substr(uniqid(), 7, 13), 1))), 0, 8);
+if(!Invoices::find()->where([ 'bill_number' => $bill_number])->exists()){
+    $model->billNo = $bill_number;
+}
 ?>
 
 <div class="row">
@@ -25,24 +32,13 @@ $this->params['breadcrumbs'][] = $this->title;
                     ],
                 ]); ?>
                 <div class="col-sm-12">
-                    <?= $form->field($model, 'id')->textInput() ?>
-                    <?= $form->field($model, 'updated_at')->widget(kartik\datetime\DateTimePicker::class, [
-                        'language' => 'zh-CN',
-                        'options' => [
-                            'value' => $model->isNewRecord ? date('Y-m-d H:i:s') : date('Y-m-d H:i:s',$model->updated_at),
-                        ],
-                        'pluginOptions' => [
-                            'format' => 'yyyy-mm-dd hh:ii',
-                            'todayHighlight' => true, // 今日高亮
-                            'autoclose' => true, // 选择后自动关闭
-                            'todayBtn' => true, // 今日按钮显示
-                        ]
-                    ]) ?>
-                    <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
-                    <?= $form->field($model, 'number')->textInput(['maxlength' => true]) ?>
+
+                    <?= $form->field($model, 'number')->widget(\kartik\select2\Select2::className(),
+                        ['data' => ArrayHelper::map(\common\models\member\Member::find()->asArray()->all(), 'id', 'username'),
+                        ])->label("选择客户");?>
                     <?= $form->field($model, 'billNo')->textInput(['maxlength' => true]) ?>
-                    <?= $form->field($model, 'optname')->textInput(['maxlength' => true]) ?>
-                    <?= $form->field($model, 'opttype')->dropDownList([]) ?>
+                    <?= $form->field($model, 'optname')->textInput(['maxlength' => true])->label("被检人") ?>
+                    <?= $form->field($model, 'opttype')->dropDownList(['0'=>'远用','1'=>'近用']) ?>
                     <?= $form->field($model, 'rightsph')->textInput(['maxlength' => true]) ?>
                     <?= $form->field($model, 'rightcyl')->textInput(['maxlength' => true]) ?>
                     <?= $form->field($model, 'rightax')->textInput(['maxlength' => true]) ?>
@@ -66,23 +62,13 @@ $this->params['breadcrumbs'][] = $this->title;
                     <?= $form->field($model, 'LPD')->textInput(['maxlength' => true]) ?>
                     <?= $form->field($model, 'pd')->textInput(['maxlength' => true]) ?>
                     <?= $form->field($model, 'remark')->textarea(['rows' => 6]) ?>
-                    <?= $form->field($model, 'yanguangshi')->dropDownList([]) ?>
+                    <?= $form->field($model, 'yanguangshi')->widget(\kartik\select2\Select2::className(), [
+                        'data' => ArrayHelper::map(\common\models\backend\Member::find()->asArray()->all(), 'id', 'username'),
+                    ]);?>
                     <?= $form->field($model, 'Rcorrected')->textInput(['maxlength' => true]) ?>
-                    <?= $form->field($model, 'created_at')->widget(kartik\datetime\DateTimePicker::class, [
-                        'language' => 'zh-CN',
-                        'options' => [
-                            'value' => $model->isNewRecord ? date('Y-m-d H:i:s') : date('Y-m-d H:i:s',$model->created_at),
-                        ],
-                        'pluginOptions' => [
-                            'format' => 'yyyy-mm-dd hh:ii',
-                            'todayHighlight' => true, // 今日高亮
-                            'autoclose' => true, // 选择后自动关闭
-                            'todayBtn' => true, // 今日按钮显示
-                        ]
-                    ]) ?>
-                    <?= $form->field($model, 'sales_id')->dropDownList([]) ?>
-                    <?= $form->field($model, 'created_user')->dropDownList([]) ?>
-                    <?= $form->field($model, 'status')->dropDownList([]) ?>
+                    <?= $form->field($model, 'sales_id')->widget(\kartik\select2\Select2::className(), [
+                        'data' => ArrayHelper::map(\common\models\backend\Member::find()->asArray()->all(), 'id', 'username'),
+                    ]);?>
                 </div>
                 <div class="form-group">
                     <div class="col-sm-12 text-center">

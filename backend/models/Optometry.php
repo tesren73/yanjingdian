@@ -39,7 +39,7 @@ use common\behaviors\MerchantBehavior;
  * @property string $LPD 左PD
  * @property string $pd 瞳距
  * @property string $remark 备注
- * @property string $yanguangshi 特殊验光
+ * @property string $yanguangshi 验光师
  * @property string $Rcorrected 矫正视力
  * @property string $created_at 验光日期
  * @property string $sales_id 销售员
@@ -63,7 +63,6 @@ class Optometry extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['id'], 'required'],
             [['id', 'status'], 'integer'],
             [['remark'], 'string'],
             [['updated_at', 'name', 'number', 'billNo', 'yanguangshi', 'created_at', 'sales_id'], 'string', 'max' => 20],

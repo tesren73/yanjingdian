@@ -50,4 +50,5 @@ class OptometryController extends BaseController
             'searchModel' => $searchModel,
         ]);
     }
+
 }

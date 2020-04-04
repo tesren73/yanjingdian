@@ -3,7 +3,7 @@
 namespace backend\models;
 
 use Yii;
-
+use common\enums\StatusEnum;
 /**
  * This is the model class for table "{{%suppliers}}".
  *
@@ -76,12 +76,12 @@ class Suppliers extends \common\models\base\BaseModel
             'password_hash' => '密码',
             'auth_key' => '授权令牌',
             'password_reset_token' => '密码重置令牌',
-            'type' => '类别[1:普通会员;10管理员]',
+            'type' => '类别',
             'nickname' => '昵称',
             'realname' => '真实姓名',
             'head_portrait' => '头像',
             'current_level' => '当前级别',
-            'gender' => '性别[0:未知;1:男;2:女]',
+            'gender' => '性别',
             'qq' => 'qq',
             'email' => '邮箱',
             'birthday' => '生日',
@@ -95,9 +95,22 @@ class Suppliers extends \common\models\base\BaseModel
             'city_id' => '城市',
             'area_id' => '地区',
             'pid' => '上级id',
-            'status' => '状态[-1:删除;0:禁用;1启用]',
+            'status' => '状态',
             'created_at' => '创建时间',
             'updated_at' => '修改时间',
         ];
+    }
+    public function beforeSave($insert)
+    {
+        if ($this->isNewRecord) {
+            $this->created_at = time();
+            $this->updated_at = $this->created_at;
+            $this->merchant_id = Yii::$app->services->merchant->getId();
+            $this->created_user = Yii::$app->user->id;
+            $this->status = StatusEnum::ENABLED;
+        } else {
+            $this->updated_at = time();
+        }
+        return parent::beforeSave($insert);
     }
 }

@@ -43,6 +43,11 @@ $this->params['breadcrumbs'][] = $this->title;
             ['attribute'=>'category_id',
                 'label'=>'商品分类',
                 'value'=>'goodsType.title',
+                'filter'=>\backend\models\MerchantConfig::find()
+                    ->select(['title','id','set_type'])
+                    ->andWhere('set_type=:set_type',[':set_type'=>'trade'])
+                    ->indexBy('id')
+                    ->column(),
             ],
             //'categoryName',
             'astigmia',

@@ -4,6 +4,8 @@ namespace backend\models;
 
 use Yii;
 use backend\models\MerchantConfig;
+use common\helpers\StringHelper;
+use common\enums\StatusEnum;
 /**
  * This is the model class for table "{{%goods}}".
  *
@@ -63,9 +65,8 @@ class Goods extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['id'], 'required'],
             [['id', 'category_id', 'status', 'merchant_id'], 'integer'],
-            [['quantity', 'salePrice', 'amount', 'vipPrice', 'lowQty', 'highQty', 'discountRate', 'wholesalePrice', 'safeDays', 'advanceDay', 'isWarranty', 'weight'], 'number'],
+            [['quantity', 'salePrice', 'amount', 'vipPrice', 'lowQty', 'highQty', 'discountRate', 'wholesalePrice', 'safeDays', 'isWarranty', 'weight'], 'number'],
             [['sku_id', 'files'], 'string'],
             [['name', 'number', 'degrees', 'categoryName', 'astigmia', 'remark', 'locationName'], 'string', 'max' => 50],
             [['unitName'], 'string', 'max' => 10],
@@ -94,7 +95,7 @@ class Goods extends \yii\db\ActiveRecord
             'category_id' => '商品分类ID',
             'categoryName' => '分类名称',
             'astigmia' => '散光',
-            'salePrice' => '预计销售价',
+            'salePrice' => '销售价',
             'amount' => '期初总价',
             'remark' => '备注',
             'status' => '状态',
@@ -130,5 +131,20 @@ class Goods extends \yii\db\ActiveRecord
     {
         return $this->hasOne(MerchantConfig::className(), ['id' => 'category_id'])
             ->where('set_type=:set_type',[':set_type'=>'trade']);
+    }
+
+    public function beforeSave($insert)
+    {
+        if ($this->isNewRecord) {
+            $this->advanceDay = StringHelper::dateToInt(($this->advanceDay));
+            $this->created_at = time();
+            $this->updated_at = $this->created_at;
+            $this->merchant_id = Yii::$app->services->merchant->getId();
+            $this->created_user = Yii::$app->user->id;
+            $this->status = StatusEnum::ENABLED;
+        } else {
+            $this->updated_at = time();
+        }
+        return parent::beforeSave($insert);
     }
 }

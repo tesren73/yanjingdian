@@ -2,6 +2,7 @@
 
 use common\helpers\Html;
 use yii\widgets\ActiveForm;
+use common\helpers\ArrayHelper;
 
 /* @var $this yii\web\View */
 /* @var $model backend\models\Suppliers */
@@ -25,16 +26,15 @@ $this->params['breadcrumbs'][] = $this->title;
                     ],
                 ]); ?>
                 <div class="col-sm-12">
-                    <?= $form->field($model, 'id')->textInput() ?>
-                    <?= $form->field($model, 'merchant_id')->dropDownList([]) ?>
                     <?= $form->field($model, 'username')->textInput(['maxlength' => true]) ?>
 
-                    <?= $form->field($model, 'type')->dropDownList([]) ?>
+                    <?= $form->field($model, 'type')->widget(\kartik\select2\Select2::className(), [
+                        'data' => ArrayHelper::map(\backend\models\MerchantConfig::find()->andFilterWhere(['set_type'=>'supplytype'])->asArray()->all(), 'id', 'title'),
+                    ]);?>
                     <?= $form->field($model, 'nickname')->textInput(['maxlength' => true]) ?>
                     <?= $form->field($model, 'realname')->textInput(['maxlength' => true]) ?>
                     <?= $form->field($model, 'head_portrait')->textInput(['maxlength' => true]) ?>
-                    <?= $form->field($model, 'current_level')->dropDownList([]) ?>
-                    <?= $form->field($model, 'gender')->textInput() ?>
+                    <?= $form->field($model, 'gender')->dropDownList(['0'=>'保密','1'=>'男','2'=>'女']) ?>
                     <?= $form->field($model, 'qq')->textInput(['maxlength' => true]) ?>
                     <?= $form->field($model, 'email')->textInput(['maxlength' => true]) ?>
                     <?= $form->field($model, 'birthday')->widget(kartik\datetime\DateTimePicker::class, [
@@ -52,49 +52,15 @@ $this->params['breadcrumbs'][] = $this->title;
                     <?= $form->field($model, 'visit_count')->textInput(['maxlength' => true]) ?>
                     <?= $form->field($model, 'home_phone')->textInput(['maxlength' => true]) ?>
                     <?= $form->field($model, 'mobile')->textInput(['maxlength' => true]) ?>
-                    <?= $form->field($model, 'role')->textInput() ?>
-                    <?= $form->field($model, 'last_time')->widget(kartik\datetime\DateTimePicker::class, [
-                        'language' => 'zh-CN',
-                        'options' => [
-                            'value' => $model->isNewRecord ? date('Y-m-d H:i:s') : date('Y-m-d H:i:s',$model->last_time),
-                        ],
-                        'pluginOptions' => [
-                            'format' => 'yyyy-mm-dd hh:ii',
-                            'todayHighlight' => true, // 今日高亮
-                            'autoclose' => true, // 选择后自动关闭
-                            'todayBtn' => true, // 今日按钮显示
-                        ]
-                    ]) ?>
-                    <?= $form->field($model, 'last_ip')->textInput(['maxlength' => true]) ?>
-                    <?= $form->field($model, 'province_id')->textInput() ?>
-                    <?= $form->field($model, 'city_id')->textInput() ?>
-                    <?= $form->field($model, 'area_id')->textInput() ?>
-                    <?= $form->field($model, 'pid')->dropDownList([]) ?>
-                    <?= $form->field($model, 'status')->dropDownList([]) ?>
-                    <?= $form->field($model, 'created_at')->widget(kartik\datetime\DateTimePicker::class, [
-                        'language' => 'zh-CN',
-                        'options' => [
-                            'value' => $model->isNewRecord ? date('Y-m-d H:i:s') : date('Y-m-d H:i:s',$model->created_at),
-                        ],
-                        'pluginOptions' => [
-                            'format' => 'yyyy-mm-dd hh:ii',
-                            'todayHighlight' => true, // 今日高亮
-                            'autoclose' => true, // 选择后自动关闭
-                            'todayBtn' => true, // 今日按钮显示
-                        ]
-                    ]) ?>
-                    <?= $form->field($model, 'updated_at')->widget(kartik\datetime\DateTimePicker::class, [
-                        'language' => 'zh-CN',
-                        'options' => [
-                            'value' => $model->isNewRecord ? date('Y-m-d H:i:s') : date('Y-m-d H:i:s',$model->updated_at),
-                        ],
-                        'pluginOptions' => [
-                            'format' => 'yyyy-mm-dd hh:ii',
-                            'todayHighlight' => true, // 今日高亮
-                            'autoclose' => true, // 选择后自动关闭
-                            'todayBtn' => true, // 今日按钮显示
-                        ]
-                    ]) ?>
+                    <?= \common\widgets\provinces\Provinces::widget([
+                        'form' => $form,
+                        'model' => $model,
+                        'provincesName' => 'province_id',// 省字段名
+                        'cityName' => 'city_id',// 市字段名
+                        'areaName' => 'area_id',// 区字段名
+                        'template' => 'short' //合并为一行显示
+                    ]); ?>
+
                 </div>
                 <div class="form-group">
                     <div class="col-sm-12 text-center">

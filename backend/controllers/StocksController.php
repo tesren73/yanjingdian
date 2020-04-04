@@ -50,4 +50,11 @@ class StocksController extends BaseController
             'searchModel' => $searchModel,
         ]);
     }
+
+    public function actionCreate()
+    {
+        return $this->render('create', [
+            'model' => $this->modelClass,
+        ]);
+    }
 }

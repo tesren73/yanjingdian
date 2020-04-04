@@ -39,4 +39,5 @@ class AppAsset extends AssetBundle
         AdminLetAsset::class,
         HeadJsAsset::class
     ];
+
 }

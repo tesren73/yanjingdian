@@ -4,7 +4,8 @@ namespace backend\models;
 
 use Yii;
 use backend\models\MerchantConfig;
-
+use common\helpers\StringHelper;
+use common\enums\StatusEnum;
 /**
  * This is the model class for table "{{%stocks}}".
  *
@@ -59,7 +60,7 @@ class Stocks extends \common\models\base\BaseModel
     {
         return [
             [['quantity', 'sale_price', 'amount', 'vip_price', 'low_qty', 'high_qty', 'wholesale_price', 'weight'], 'number'],
-            [['category_id', 'status', 'qty_type', 'merchant_id', 'sku_id', 'safe_days', 'advance_day'], 'integer'],
+            [['category_id', 'status', 'qty_type', 'merchant_id', 'sku_id', 'safe_days'], 'integer'],
             [['name', 'number', 'degrees', 'astigmia', 'remark', 'property'], 'string', 'max' => 50],
             [['unitName'], 'string', 'max' => 10],
             [['length', 'height'], 'string', 'max' => 25],
@@ -115,5 +116,19 @@ class Stocks extends \common\models\base\BaseModel
     {
         return $this->hasOne(MerchantConfig::className(), ['id' => 'category_id'])
             ->where('set_type=:set_type',[':set_type'=>'trade']);
+    }
+    public function beforeSave($insert)
+    {
+        if ($this->isNewRecord) {
+            $this->advance_day = StringHelper::dateToInt(($this->advance_day));
+            $this->created_at = time();
+            $this->updated_at = $this->created_at;
+            $this->merchant_id = Yii::$app->services->merchant->getId();
+            $this->created_user = Yii::$app->user->id;
+            $this->status = StatusEnum::ENABLED;
+        } else {
+            $this->updated_at = time();
+        }
+        return parent::beforeSave($insert);
     }
 }
