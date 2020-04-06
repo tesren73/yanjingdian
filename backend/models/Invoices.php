@@ -90,7 +90,7 @@ class Invoices extends \yii\db\ActiveRecord
             'arrears' => '本次欠款',
             'dis_rate' => '折扣率',
             'dis_amount' => '折扣金额',
-            'total_qty' => '总数量',
+            'total_qty' => '单数',
             'total_arrears' => '欠款总额',
             'bill_status' => '订单状态 ',
             'check_name' => '采购单审核人',

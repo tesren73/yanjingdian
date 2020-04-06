@@ -2,6 +2,7 @@
 
 namespace backend\controllers;
 
+use backend\models\Goods;
 use Yii;
 use backend\models\Invoices;
 use backend\models\InvoiceInfo;
@@ -57,16 +58,49 @@ class InvoicesController extends BaseController
         $modelInf = new InvoiceInfo();
         $bill_number = date('Ymd').substr(implode(NULL, array_map('ord', str_split(substr(uniqid(), 7, 13), 1))), 0, 8);
         if(!Invoices::find()->where([ 'bill_number' => $bill_number])->exists()){
-            $model->bill_number = $bill_number;
+            $model->bill_number = 'XS'.$bill_number;
         }
-        if ($model->load(Yii::$app->request->post()) && $model->save(false) && $modelInf->load(yii::$app->request->post()) && $modelInf->save(false)) {
-            
-            return $this->redirect(['invoices/view', 'id' => $modelInf->id]);
+        $db = Yii::$app->db;
+        $transaction = $db->beginTransaction();  //开启事务
+        try {
+            if ($model->load(Yii::$app->request->post()) && $modelInf->load(Yii::$app->request->post())) {
+                $model->amount = $model->total_amount;
+                $model->total_qty = count($_POST['InvoiceInfo']['invoiceinfo']);
+                $model->save(false); // skip validation as model is already validated
+                //$ad->user_id = $user->id; // no need for validation rule on user_id as you set it yourself
+                //\Yii::$app->session->setFlash('success',$modelInf);
+                for($i=0; $i<count($_POST['InvoiceInfo']['invoiceinfo']);$i++){
+                    $invoiceinf = new InvoiceInfo();
+                    $invoiceinf->iid = $model->id;
+                    $invoiceinf->buid = $model->buid;
+                    $invoiceinf->bill_no = $model->bill_number;
+                    $invoiceinf->invid = $_POST['InvoiceInfo']['invoiceinfo'][$i]['number'];
+                    $invoiceinf->qty = $_POST['InvoiceInfo']['invoiceinfo'][$i]['qty'];
+                    $invoiceinf->price = $_POST['InvoiceInfo']['invoiceinfo'][$i]['price'];
+                    $invoiceinf->amount = $_POST['InvoiceInfo']['invoiceinfo'][$i]['price'];
+                    $invoiceinf->save(false);
+                    $modelGoods = Goods::findOne($invoiceinf->invid);
+                    $modelGoods->quantity = $modelGoods->quantity - $invoiceinf->qty;
+                    $modelGoods->save(false);
+                }
+
+                $this->redirect(['invoices/index']);
+            } else {
+                return $this->render('create', [
+                    'model' => $model,
+                    'modelInf' => $modelInf,
+                ]);
+            }
+            $transaction->commit();
+
+        } catch (Exception $e) {
+            // 记录回滚（事务回滚）
+            $transaction->rollBack();
+            //Yii::$app->session->setFlash('error',$e->getMessage());
+            return $this->render('create', [
+                'model' => $model,
+                'modelInf'=>$modelInf,
+            ]);
         }
-        
-        return $this->render('create', [
-            'model' => $model,
-            'modelInf' => $modelInf,
-        ]);
     }
 }

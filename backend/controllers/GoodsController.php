@@ -50,4 +50,16 @@ class GoodsController extends BaseController
             'searchModel' => $searchModel,
         ]);
     }
+    public function actionGetgoods()
+    {
+        $request = Yii::$app->request;
+        $purchaseDetailID = $request->post('number');
+        if ($purchaseDetailID)
+        {
+            //var_dump($request);
+            $purchaseData = Goods::find()->where(['id' => $purchaseDetailID])->asArray()->all();
+            $data = json_encode($purchaseData,true);
+            return $data;
+        }
+    }
 }

@@ -168,11 +168,11 @@ $this->params['breadcrumbs'][] = $this->title;
     <td colspan="3"><?= $form->field($model, 'remark')->textInput(['maxlength' => true])->label(false);?></td>
   </tr>
   <tr>
-    <td colspan="7"><span style="font-size:16px; font-weight:bold;">商品信息</span></td>
+    <td colspan="7">商品信息</td>
   </tr>
   <tr>
     <td colspan="2">选择商品：</td>
-    <td colspan="5">
+    <td colspan="5"><div id="message-tip"></div>
     <?= $form->field($modelInf, 'invoiceinfo')->widget(MultipleInput::className(), [
 						'max' => 10,
 						'cloneButton' => true,
@@ -180,28 +180,41 @@ $this->params['breadcrumbs'][] = $this->title;
 							[
 								'name'  => 'number',
 								'type'  => \kartik\select2\Select2::class,
-								'title' => '商品',
+								'title' => '商品编号',
 								'defaultValue' => 1,
 								 'options' => [
 									 'data'  =>[ArrayHelper::map(\backend\models\Goods::find()->asArray()->all(), 'id', 'number')],
 								 ],
 							],
+                            [
+                                'name'  => 'name',
+                                'title' => '商品名称',
+
+                                'enableError' => true,
+                                'options' => [
+                                    'readonly' => true,
+                                ]
+                            ],
 						    [
 						        'name'  => 'degrees',
 						        'title' => '度数',
 						        'defaultValue' => 0,
+
 						        'enableError' => true,
 						        'options' => [
-						        									'class' => 'input-degrees',
+                                        'class' => 'input-degrees',
+                                    'readonly' => true,
 						        ]
 						    ],
 						    [
 						        'name'  => 'astigmia',
 						        'title' => '散光',
 						        'defaultValue' => 0,
+
 						        'enableError' => true,
 						        'options' => [
-						        									'class' => 'input-astigmia',
+						        		'class' => 'input-astigmia',
+                                    'readonly' => true,
 						        ]
 						    ],
 							[
@@ -277,8 +290,10 @@ $(document).on('change', 'select', function(){
 
    var string_id=$(this).attr('id');
     var number = document.getElementById(string_id).value;
-        //alert (number);
-    if(string_id.indexOf("-")){
+    if(string_id.indexOf("invoiceinfo") != -1){
+
+        var messagediv = document.getElementById("message-tip");
+        messagediv.innerHTML="";
        var sid=string_id.split("-");
        var url = '/backend/yanpei/getgoods';
        //var url = 'http://localhost/backend/yanpei/getgoods';
@@ -289,11 +304,12 @@ $(document).on('change', 'select', function(){
     		cache:false,
            url:url,
            dataType : 'json',
-           async : false,
     		data:{'number':number},   //传值到控制器，获取相应数据
     		success : function(data){
-               //alert ($("#invoiceinfo-invoiceinfo-"+sid[2]+"-degrees").val());
-               //alert (JSON.stringify(data));
+    		    if('0'==data[0]['quantity']){
+                    messagediv.innerHTML="<font color='red'>您选择的商品库存不足！请重新选择。</font>";
+    		    }else{
+               $("#invoiceinfo-invoiceinfo-"+sid[2]+"-name").val(data[0]['name']);
           	   //var obj = JSON.parse(data);    //解析从控制器传来的数据（此时是数组）
                //alert(document.getElementById("invoiceinfo-name-1-astigmia").value);
                //document.getElementById("invoiceinfo-goodsinfo-"+sid[2]+"-degrees").value = data[0]['degrees'];
@@ -301,7 +317,7 @@ $(document).on('change', 'select', function(){
            	   $("#invoiceinfo-invoiceinfo-"+sid[2]+"-degrees").val(data[0]['degrees']);
            		$("#invoiceinfo-invoiceinfo-"+sid[2]+"-astigmia").val(data[0]['astigmia']);
            		$("#invoiceinfo-invoiceinfo-"+sid[2]+"-price").val(data[0]['saleprice']);
-
+                }
     		},
     	       error: function(XMLHttpRequest, textStatus, errorThrown) {
                                    //alert (errorThrown);

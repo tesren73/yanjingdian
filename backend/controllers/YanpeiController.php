@@ -28,8 +28,8 @@ class YanpeiController extends BaseController
         $modelInf = new InvoiceInfo();
         $bill_number = date('Ymd').substr(implode(NULL, array_map('ord', str_split(substr(uniqid(), 7, 13), 1))), 0, 8);
         if(!Invoices::find()->where([ 'bill_number' => $bill_number])->exists()){
-            $modelInv->bill_number = $bill_number;
-            $model->billNo = $bill_number;
+            $modelInv->bill_number = 'XS'.$bill_number;
+            $model->billNo = 'XS'.$bill_number;
         }
         if($model->load(Yii::$app->request->post()))
         {
@@ -39,6 +39,7 @@ class YanpeiController extends BaseController
         $transaction = $db->beginTransaction();  //开启事务
         try {
             if ($modelInv->load(Yii::$app->request->post()) && $modelInf->load(Yii::$app->request->post())) {
+                $modelInv->bill_number = 'XS'.$bill_number;
                 $modelInv->buid = $model->name;
                 $modelInv->amount = $modelInv->rp_amount;
                 $modelInv->total_qty = count($_POST['InvoiceInfo']['invoiceinfo']);
@@ -48,16 +49,18 @@ class YanpeiController extends BaseController
                 for($i=0; $i<count($_POST['InvoiceInfo']['invoiceinfo']);$i++){
                     $invoiceinf = new InvoiceInfo();
                     $invoiceinf->iid = $modelInv->id;
-                    $invoiceinf->buid = $model->name;
-                    $invoiceinf->bill_no = $bill_number;
+                    $invoiceinf->buid = $modelInv->buid;
+                    $invoiceinf->bill_no = $modelInv->bill_number;
                     $invoiceinf->invid = $_POST['InvoiceInfo']['invoiceinfo'][$i]['number'];
                     $invoiceinf->qty = $_POST['InvoiceInfo']['invoiceinfo'][$i]['qty'];
                     $invoiceinf->price = $_POST['InvoiceInfo']['invoiceinfo'][$i]['price'];
                     $invoiceinf->amount = $_POST['InvoiceInfo']['invoiceinfo'][$i]['price'];
-                    if($invoiceinf->save(false)){
-                        $this->redirect(['invoices/index']);
-                    }
+                    $invoiceinf->save(false);
+                    $modelGoods = Goods::findOne($invoiceinf->invid);
+                    $modelGoods->quantity = $modelGoods->quantity - $invoiceinf->qty;
+                    $modelGoods->save(false);
                 }
+                $this->redirect(['invoices/index']);
             } else {
                 return $this->render('create', [
                     'model' => $model,
@@ -79,20 +82,17 @@ class YanpeiController extends BaseController
         }
     }
 
-    public function actionGetgoods() 
+
+    public function actionGetgoods()
     {
         $request = Yii::$app->request;
         $purchaseDetailID = $request->post('number');
         if ($purchaseDetailID)
         {
-            //var_dump($request);
-            
             $purchaseData = Goods::find()->where(['id' => $purchaseDetailID])->asArray()->all();
-            $data = json_encode($purchaseData,true);
-            //echo $data;
-            return $data;
+                $data = json_encode($purchaseData,true);
+                return $data;
         }
     }
-
 
 }

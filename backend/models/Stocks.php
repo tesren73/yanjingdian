@@ -77,6 +77,7 @@ class Stocks extends \common\models\base\BaseModel
     {
         return [
             'id' => 'ID',
+            'buid' => '供应商',
             'name' => '商品名称',
             'number' => '商品编号',
             'quantity' => '出入库数量',
@@ -85,7 +86,7 @@ class Stocks extends \common\models\base\BaseModel
             'category_id' => '商品分类ID',
             'astigmia' => '散光',
             'sale_price' => '销售价',
-            'amount' => '期初总价',
+            'amount' => '总价',
             'remark' => '备注',
             'status' => '状态',
             'vip_price' => '会员价',

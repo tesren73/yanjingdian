@@ -60,118 +60,134 @@ $this->params['breadcrumbs'][] = $this->title;
                         'validateOnBlur'            => false,
                     ]);?>
                 <div class="col-sm-12">
-                <table  class=table11_3 width="100%">
-                  <tr>
-                    <th>客户</th>
-                    <th>销售人员</th>
-                    <th>单据日期</th>
-                    <th>单据编号</th>
-                  </tr>
-                  <tr>
-                    <td><?= $form->field($model, 'buid')->widget(\kartik\select2\Select2::className(),
-					['data' => ArrayHelper::map(\common\models\member\Member::find()->asArray()->all(), 'id', 'username'),
-					])->label(false);?></td>
-                    <td><?= $form->field($model, 'sales_id')->widget(\kartik\select2\Select2::className(), [
-        'data' => ArrayHelper::map(\common\models\backend\Member::find()->asArray()->all(), 'id', 'username'),
-    ])->label(false);?></td>
-                    <td><?= $form->field($model, 'created_at')->textInput(['maxlength' => true,'value' => date("Y-m-d H:i:s"),'readonly' => true])->label(false);?></td>
-                    <td><?= $form->field($model, 'bill_number')->textInput(['maxlength' => true])->label(false);?></td>
-                  </tr>
-                </table>
-      
-<table  class="table11_3">
 
-  <tr>
-    <td colspan="7"><span style="font-size:16px; font-weight:bold;">商品信息</span></td>
-  </tr>
-  <tr>
-    <td colspan="7">
-    <?= $form->field($modelInf, 'invoiceinfo')->widget(MultipleInput::className(), [
-						'max' => 10,
-						'cloneButton' => true,
-						'columns' => [
-							[
-								'name'  => 'number',
-								'type'  => \kartik\select2\Select2::class,
-								'title' => '商品',
-								'defaultValue' => 1,
-								 'options' => [
-									 'data'  =>[ArrayHelper::map(\backend\models\Goods::find()->asArray()->all(), 'id', 'number')],
-								 ],
-							],
-						    [
-						        'name'  => 'degrees',
-						        'title' => '度数',
-						        'defaultValue' => 0,
-						        'enableError' => true,
-						        'options' => [
-						        									'class' => 'input-degrees',
-						        ]
-						    ],
-						    [
-						        'name'  => 'astigmia',
-						        'title' => '散光',
-						        'defaultValue' => 0,
-						        'enableError' => true,
-						        'options' => [
-						        									'class' => 'input-astigmia',
-						        ]
-						    ],
-							[
-								'name'  => 'qty',
-								'title' => '数量',
-								'defaultValue' => 1,
-								'enableError' => true,
-								'options' => [
-								]
-							],
-							[
-								'name'  => 'price',
-								'title' => '单价',
-								'defaultValue' => 0.00,
-								'enableError' => true,
-								'options' => [
-								]
-							]
-						]
-					])->label(false); ?>    
-					</td>
-  </tr>
+                            <table  class="table11_3">
+                                <tr>
+                                    <th colspan="2">客户</th>
+                                    <th colspan="2">销售人员</th>
+                                    <th colspan="2">单据编号</th>
+                                </tr>
+                                <tr>
+                                    <td colspan="2"><?= $form->field($model, 'buid')->widget(\kartik\select2\Select2::className(),
+                                            ['data' => ArrayHelper::map(\common\models\member\Member::find()->asArray()->all(), 'id', 'username'),
+                                            ])->label(false);?></td>
+                                    <td colspan="2"><?= $form->field($model, 'sales_id')->widget(\kartik\select2\Select2::className(), [
+                                            'data' => ArrayHelper::map(\common\models\backend\Member::find()->asArray()->all(), 'id', 'username'),
+                                        ])->label(false);?></td>
+                                    <td colspan="2"><?= $form->field($model, 'bill_number')->textInput(['maxlength' => true])->label(false);?></td>
+                                </tr>
+                                <tr>
+                                    <th colspan="2">客户电话</th>
+                                    <th colspan="2">客户余额</th>
+                                    <th colspan="2">单据日期</th>
+                                </tr>
+                                <tr>
+                                    <td colspan="2">客户</td>
+                                    <td colspan="2">销售人员</td>
+                                    <td colspan="2"><?= $form->field($model, 'created_at')->textInput(['maxlength' => true,'value' => date("Y-m-d H:i:s"),'readonly' => true])->label(false);?></td>
+                                </tr>
+                              <tr>
+                                <td colspan="6"><span style="font-size:16px; font-weight:bold;">商品信息</span></td>
+                              </tr>
+                              <tr>
+                                <td colspan="6"><div id="message-tip"></div>
+                                <?= $form->field($modelInf, 'invoiceinfo')->widget(MultipleInput::className(), [
+                                                    'max' => 10,
+                                                    'cloneButton' => true,
+                                                    'columns' => [
+                                                        [
+                                                            'name'  => 'number',
+                                                            'type'  => \kartik\select2\Select2::class,
+                                                            'title' => '商品',
+                                                            'defaultValue' => 1,
+                                                             'options' => [
+                                                                 'data'  =>[ArrayHelper::map(\backend\models\Goods::find()->asArray()->all(), 'id', 'number')],
+                                                             ],
+                                                        ],
+                                                        [
+                                                            'name'  => 'name',
+                                                            'title' => '商品名称',
 
-  <tr>
-    <td colspan="7"><span style="font-size:16px; font-weight:bold;">收款信息</span></td>
-  </tr>
-  <tr>
-    <th colspan="2">总金额：</th>
-    <td><?= $form->field($model, 'total_amount')->textInput(['maxlength' => true])->label(false);?></td>
-    <th>优惠金额：</th>
-    <td><?= $form->field($model, 'dis_amount')->textInput(['maxlength' => true])->label(false);?></td>
-    <th>承担费用：</th>
-    <td><?= $form->field($model, 'customer_free')->textInput(['maxlength' => true])->label(false);?></td>
-  </tr>
-  <tr>
-    <th colspan="2">结算账户：</th>
-    <td><?= $form->field($model, 'accid')->widget(\kartik\select2\Select2::className(), [
-            'data' => ArrayHelper::map(\backend\models\MerchantConfig::find()->andFilterWhere(['set_type'=>'PayMethod'])->asArray()->all(), 'id', 'title'),
-        ])->label(false);?></td>
-    <th>付款金额：</th>
-    <td><?= $form->field($model, 'rp_amount')->textInput(['maxlength' => true])->label(false);?></td>
-    <th>余额支付：</th>
-    <td><?= $form->field($model, 'bill_status')->textInput(['maxlength' => true])->label(false);?></td>
-  </tr>
-  <tr>
-    <th colspan="2">制单人：</th>
-    <td><?= $form->field($model, 'created_user')->textInput(['maxlength' => true,'value' => Yii::$app->user->identity->username,'readonly' => true])->label(false);?></td>
-    <th></th>
-    <th></th>
-    <th>审核人：</th>
-    <td>&nbsp;</td>
-  </tr>
-</table>
-        
-</div>
-<p>&nbsp;</p>
-     <div class="form-group">
+                                                            'enableError' => true,
+                                                            'options' => [
+                                                                'readonly' => true,
+                                                            ]
+                                                        ],
+                                                        [
+                                                            'name'  => 'degrees',
+                                                            'title' => '度数',
+                                                            'defaultValue' => 0,
+                                                            'enableError' => true,
+                                                            'options' => [
+                                                                'readonly' => true,
+                                                                'class' => 'input-degrees',
+                                                            ]
+                                                        ],
+                                                        [
+                                                            'name'  => 'astigmia',
+                                                            'title' => '散光',
+                                                            'defaultValue' => 0,
+                                                            'enableError' => true,
+                                                            'options' => [
+                                                                'readonly' => true,
+                                                                'class' => 'input-astigmia',
+                                                            ]
+                                                        ],
+                                                        [
+                                                            'name'  => 'qty',
+                                                            'title' => '数量',
+                                                            'defaultValue' => 1,
+                                                            'enableError' => true,
+                                                            'options' => [
+                                                            ]
+                                                        ],
+                                                        [
+                                                            'name'  => 'price',
+                                                            'title' => '单价',
+                                                            'defaultValue' => 0.00,
+                                                            'enableError' => true,
+                                                            'options' => [
+                                                            ]
+                                                        ]
+                                                    ]
+                                                ])->label(false); ?>
+                                                </td>
+                              </tr>
+
+                              <tr>
+                                <td colspan="6"><span style="font-size:16px; font-weight:bold;">收款信息</span></td>
+                              </tr>
+                              <tr>
+                                <th>总金额：</th>
+                                <td><?= $form->field($model, 'total_amount')->textInput(['maxlength' => true])->label(false);?></td>
+                                <th>优惠金额：</th>
+                                <td><?= $form->field($model, 'dis_amount')->textInput(['maxlength' => true])->label(false);?></td>
+                                <th>承担费用：</th>
+                                <td><?= $form->field($model, 'customer_free')->textInput(['maxlength' => true])->label(false);?></td>
+                              </tr>
+                              <tr>
+                                <th>结算账户：</th>
+                                <td><?= $form->field($model, 'accid')->widget(\kartik\select2\Select2::className(), [
+                                        'data' => ArrayHelper::map(\backend\models\MerchantConfig::find()->andFilterWhere(['set_type'=>'PayMethod'])->asArray()->all(), 'id', 'title'),
+                                    ])->label(false);?></td>
+                                <th>付款金额：</th>
+                                <td><?= $form->field($model, 'rp_amount')->textInput(['maxlength' => true])->label(false);?></td>
+                                <th>余额支付：</th>
+                                <td><?= $form->field($model, 'bill_status')->textInput(['maxlength' => true])->label(false);?></td>
+                              </tr>
+                              <tr>
+                                <th>制单人：</th>
+                                <td><?= $form->field($model, 'created_user')->textInput(['maxlength' => true,'value' => Yii::$app->user->identity->username,'readonly' => true])->label(false);?></td>
+                                <th></th>
+                                <th></th>
+                                <th>审核人：</th>
+                                <td>&nbsp;</td>
+                              </tr>
+                            </table>
+
+                            </div>
+                            <p>&nbsp;</p>
+                 <div class="form-group">
                     <div class="col-sm-12 text-center">
                         <button class="btn btn-primary" type="submit">保存</button>
                         <span class="btn btn-white" onclick="history.go(-1)">返回</span>
@@ -191,7 +207,9 @@ $(document).on('change', 'select', function(){
    var string_id=$(this).attr('id');
     var number = document.getElementById(string_id).value;
         //alert (number);
-    if(string_id.indexOf("-")){
+    if(string_id.indexOf("invoiceinfo") != -1){
+        var messagediv = document.getElementById("message-tip");
+        messagediv.innerHTML="";
        var sid=string_id.split("-");
        var url = '/backend/yanpei/getgoods';
        //var url = 'http://localhost/backend/yanpei/getgoods';
@@ -202,19 +220,19 @@ $(document).on('change', 'select', function(){
     		cache:false,
            url:url,
            dataType : 'json',
-           async : false,
     		data:{'number':number},   //传值到控制器，获取相应数据
     		success : function(data){
-               //alert ($("#invoiceinfo-invoiceinfo-"+sid[2]+"-degrees").val());
-               //alert (JSON.stringify(data));
-          	   //var obj = JSON.parse(data);    //解析从控制器传来的数据（此时是数组）
-               //alert(document.getElementById("invoiceinfo-name-1-astigmia").value);
-               //document.getElementById("invoiceinfo-goodsinfo-"+sid[2]+"-degrees").value = data[0]['degrees'];
-           	   //$("#input-degrees").val(obj[0]['degrees']);//解析后的数据相应值放到对应ID的文本框中
-           	   $("#invoiceinfo-invoiceinfo-"+sid[2]+"-degrees").val(data[0]['degrees']);
-           		$("#invoiceinfo-invoiceinfo-"+sid[2]+"-astigmia").val(data[0]['astigmia']);
-           		$("#invoiceinfo-invoiceinfo-"+sid[2]+"-price").val(data[0]['saleprice']);
-
+                if('0'==data[0]['quantity']){
+                    messagediv.innerHTML="<font color='red'>您选择的商品库存不足！请重新选择。</font>";
+    		    }else{
+                   //var obj = JSON.parse(data);    //解析从控制器传来的数据（此时是数组）
+                   $("#invoiceinfo-invoiceinfo-"+sid[2]+"-name").val(data[0]['name']);
+                   //document.getElementById("invoiceinfo-goodsinfo-"+sid[2]+"-degrees").value = data[0]['degrees'];
+                   //$("#input-degrees").val(obj[0]['degrees']);//解析后的数据相应值放到对应ID的文本框中
+                   $("#invoiceinfo-invoiceinfo-"+sid[2]+"-degrees").val(data[0]['degrees']);
+                    $("#invoiceinfo-invoiceinfo-"+sid[2]+"-astigmia").val(data[0]['astigmia']);
+                    $("#invoiceinfo-invoiceinfo-"+sid[2]+"-price").val(data[0]['saleprice']);
+                }
     		},
     	       error: function(XMLHttpRequest, textStatus, errorThrown) {
                                    //alert (errorThrown);

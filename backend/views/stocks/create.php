@@ -1,126 +1,263 @@
 <?php
 
-use addons\TinyShop\html5\assets\AppAsset;
 use common\helpers\Html;
-use yii\widgets\ActiveForm;
 use unclead\multipleinput\MultipleInput;
-use common\helpers\ArrayHelper;
+use yii\helpers\ArrayHelper;
+use yii\widgets\ActiveForm;
 
 /* @var $this yii\web\View */
-/* @var $model backend\models\Stocks */
+/* @var $model backend\models\Optometry */
 /* @var $form yii\widgets\ActiveForm */
 
-$this->title = '库存列表';
-$this->params['breadcrumbs'][] = ['label' => '库存列表', 'url' => ['index']];
+$this->title = '采购单';
+$this->params['breadcrumbs'][] = ['label' => '采购单', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-    <div class="row">
-        <div class="col-lg-12">
-            <div class="box">
-                <div class="wrapper">
-                    <span id="config" class="ui-icon ui-state-default ui-icon-config"></span>
-                    <div class="mod-toolbar-top mr0 cf dn" id="toolTop"></div>
-                    <div class="bills cf">
-                        <div class="con-header">
-                            <dl class="cf">
-                                <dd class="pct30">
-                                    <label>供应商:</label>
-          <span class="ui-combo-wrap" id="customer">
-          <input type="text" name="" class="input-txt" autocomplete="off" value="" data-ref="date">
-          <i class="ui-icon-ellipsis"></i></span></dd>
-                                <dd class="pct25 tc">
-                                    <label>单据日期:</label>
-                                    <input type="text" id="date" class="ui-input ui-datepicker-input" value="2015-08-27">
-                                </dd>
-                                <dd id="identifier" class="pct25 tc">
-                                    <label>单据编号:</label>
-                                    <span id="number"><?php echo $billNo?></span></dd>
-                            </dl>
-                        </div>
-                        <div class="grid-wrap">
-                            <table id="grid">
-                            </table>
-                            <div id="page"></div>
-                        </div>
-                        <div class="con-footer cf">
-                            <div class="mb10">
-                                <textarea type="text" id="note" class="ui-input ui-input-ph">暂无备注信息</textarea>
-                            </div>
-                            <ul id="amountArea" class="cf">
-                                <li>
-                                    <label>优惠率:</label>
-                                    <input type="text" id="discountRate" class="ui-input" data-ref="deduction">%
-                                </li>
-                                <li>
-                                    <label>优惠金额:</label>
-                                    <input type="text" id="deduction" class="ui-input" data-ref="payment">
-                                </li>
-                                <li>
-                                    <label>优惠后金额:</label>
-                                    <input type="text" id="discount" class="ui-input ui-input-dis" data-ref="discountRate" disabled>
-                                </li>
-                                <li>
-                                    <label id="paymentTxt">本次付款:</label>
-                                    <input type="text" id="payment" class="ui-input">&emsp;
-                                </li>
-                                <li id="accountWrap" class="dn">
-                                    <label>结算账户:</label>
-          <span class="ui-combo-wrap" id="account" style="padding:0;">
-          <input type="text" class="input-txt" autocomplete="off">
-          <i class="trigger"></i></span><a id="accountInfo" class="ui-icon ui-icon-folder-open" style="display:none;"></a>
-                                </li>
-                                <li>
-                                    <label>本次欠款:</label>
-                                    <input type="text" id="arrears" class="ui-input ui-input-dis" disabled>
-                                </li>
+
+    <style>
 
 
+        .table11_3 table {
+            width:100%;
+            margin:15px 0;
+            border:0;
+        }
+        .table11_3 th {
+            background-color:#E2E2E2;
+            color:#000000
+        }
+        .table11_3,.table11_3 th,.table11_3 td {
+            font-size:0.95em;
+            text-align:center;
+            padding:4px;
+            border-collapse:collapse;
+        }
+        .table11_3 th,.table11_3 td {
+            border: 1px solid ;
+            border-width:1px 0 1px 0;
+            border:2px inset #ffffff;
+        }
+        .table11_3 tr {
+            border: 1px solid #ffffff;
+        }
+        .STYLE1 {color: #FF0000}
+    </style>
+    <body>
 
-                                <li class="dn">
-                                    <label>累计欠款:</label>
-                                    <input type="text" id="totalArrears" class="ui-input ui-input-dis" disabled>
-                                </li>
-                            </ul>
-                            <ul class="c999 cf">
-                                <li>
-                                    <label>制单人:</label>
-                                    <span id="userName"></span>
-                                </li>
-                                <li>
-                                    <label>审核人:</label>
-                                    <span id="checkName"></span>
-                                </li>
-                                <li>
-                                    <label>录单时间:</label>
-                                    <span id="createTime"></span>
-                                </li>
-                                <li>
-                                    <label>最后修改时间:</label>
-                                    <span id="modifyTime"></span>
-                                </li>
-                            </ul>
-                        </div>
-                        <div class="cf" id="bottomField">
-                            <div class="fr" id="toolBottom"></div>
-                        </div>
-                        <div id="mark"></div>
-                    </div>
-
-                    <div id="initCombo" class="dn">
-                        <input type="text" class="textbox goodsAuto" name="goods" autocomplete="off">
-                        <input type="text" class="textbox storageAuto" name="storage" autocomplete="off">
-                        <input type="text" class="textbox unitAuto" name="unit" autocomplete="off">
-                        <input type="text" class="textbox batchAuto" name="batch" autocomplete="off">
-                        <input type="text" class="textbox dateAuto" name="date" autocomplete="off">
-                        <input type="text" class="textbox priceAuto" name="price" autocomplete="off">
-                        <input type="text" class="textbox skuAuto" name="price" autocomplete="off">
-                    </div>
-                    <div id="storageBox" class="shadow target_box dn">
-                    </div>
-                </div>
-                </div>
+<div class="row">
+    <div class="col-lg-12">
+        <div class="box">
+            <div class="box-header with-border">
+                <h3 class="box-title">基本信息</h3>
             </div>
+            <div class="box-body">
+                <?php $form = ActiveForm::begin([
+                    'enableAjaxValidation'      => true,
+                    'enableClientValidation'    => true,
+                    'validateOnChange'          => false,
+                    'validateOnSubmit'          => true,
+                    'validateOnBlur'            => false,
+                ]);?>
+                <div class="col-sm-12">
+
+                    <table  class="table11_3">
+                        <tr>
+                            <th colspan="2">供应商</th>
+                            <th colspan="2">采购人员</th>
+                            <th colspan="2">单据编号</th>
+                        </tr>
+                        <tr>
+                            <td colspan="2"><?= $form->field($model, 'buid')->widget(\kartik\select2\Select2::className(),
+                                    ['data' => ArrayHelper::map(\backend\models\Suppliers::find()->asArray()->all(), 'id', 'username'),
+                                    ])->label(false);?></td>
+                            <td colspan="2"><?= $form->field($model, 'sales_id')->widget(\kartik\select2\Select2::className(), [
+                                    'data' => ArrayHelper::map(\common\models\backend\Member::find()->asArray()->all(), 'id', 'username'),
+                                ])->label(false);?></td>
+                            <td colspan="2"><?= $form->field($model, 'bill_number')->textInput(['maxlength' => true])->label(false);?></td>
+                        </tr>
+                        <tr>
+                            <th colspan="2">供应商电话</th>
+                            <th colspan="2">供应商余额</th>
+                            <th colspan="2">单据日期</th>
+                        </tr>
+                        <tr>
+                            <td colspan="2">客户</td>
+                            <td colspan="2">销售人员</td>
+                            <td colspan="2"><?= $form->field($model, 'created_at')->textInput(['maxlength' => true,'value' => date("Y-m-d H:i:s"),'readonly' => true])->label(false);?></td>
+                        </tr>
+                        <tr>
+                            <td colspan="6"><span style="font-size:16px; font-weight:bold;">商品信息</span></td>
+                        </tr>
+                        <tr>
+                            <td colspan="6">
+                                <?= $form->field($modelInf, 'invoiceinfo')->widget(MultipleInput::className(), [
+                                    'max' => 10,
+                                    'cloneButton' => true,
+                                    'columns' => [
+                                        [
+                                            'name'  => 'number',
+                                            'type'  => \kartik\select2\Select2::class,
+                                            'title' => '商品编号',
+                                            'defaultValue' => 1,
+                                            'options' => [
+                                                'data'  =>[ArrayHelper::map(\backend\models\Goods::find()->asArray()->all(), 'id', 'number')],
+                                            ],
+                                        ],
+                                        [
+                                            'name'  => 'name',
+                                            'title' => '商品名称',
+
+                                            'enableError' => true,
+                                            'options' => [
+                                                'readonly' => true,
+                                            ]
+                                        ],
+                                        [
+                                            'name'  => 'degrees',
+                                            'title' => '度数',
+                                            'defaultValue' => 0,
+
+                                            'enableError' => true,
+                                            'options' => [
+                                                'class' => 'input-degrees',
+                                                'readonly' => true,
+                                            ]
+                                        ],
+                                        [
+                                            'name'  => 'astigmia',
+                                            'title' => '散光',
+                                            'defaultValue' => 0,
+
+                                            'enableError' => true,
+                                            'options' => [
+                                                'class' => 'input-astigmia',
+                                                'readonly' => true,
+                                            ]
+                                        ],
+                                        [
+                                            'name'  => 'qty',
+                                            'title' => '数量',
+                                            'defaultValue' => 1,
+                                            'enableError' => true,
+                                            'options' => [
+                                            ]
+                                        ],
+                                        [
+                                            'name'  => 'price',
+                                            'title' => '单价',
+                                            'defaultValue' => 0.00,
+                                            'enableError' => true,
+                                            'options' => [
+                                            ]
+                                        ]
+                                    ]
+                                ])->label(false); ?>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td colspan="6"><span style="font-size:16px; font-weight:bold;">付款信息</span></td>
+                        </tr>
+                        <tr>
+                            <th>总金额：</th>
+                            <td><?= $form->field($model, 'total_amount')->textInput(['maxlength' => true])->label(false);?></td>
+                            <th>优惠金额：</th>
+                            <td><?= $form->field($model, 'dis_amount')->textInput(['maxlength' => true])->label(false);?></td>
+                            <th>承担费用：</th>
+                            <td><?= $form->field($model, 'customer_free')->textInput(['maxlength' => true])->label(false);?></td>
+                        </tr>
+                        <tr>
+                            <th>结算账户：</th>
+                            <td><?= $form->field($model, 'accid')->widget(\kartik\select2\Select2::className(), [
+                                    'data' => ArrayHelper::map(\backend\models\MerchantConfig::find()->andFilterWhere(['set_type'=>'PayMethod'])->asArray()->all(), 'id', 'title'),
+                                ])->label(false);?></td>
+                            <th>付款金额：</th>
+                            <td><?= $form->field($model, 'rp_amount')->textInput(['maxlength' => true])->label(false);?></td>
+                            <th>余额支付：</th>
+                            <td><?= $form->field($model, 'bill_status')->textInput(['maxlength' => true])->label(false);?></td>
+                        </tr>
+                        <tr>
+                            <th>制单人：</th>
+                            <td><?= $form->field($model, 'created_user')->textInput(['maxlength' => true,'value' => Yii::$app->user->identity->username,'readonly' => true])->label(false);?></td>
+                            <th></th>
+                            <th></th>
+                            <th>审核人：</th>
+                            <td>&nbsp;</td>
+                        </tr>
+                    </table>
+
+                </div>
+                <p>&nbsp;</p>
+                <div class="form-group">
+                    <div class="col-sm-12 text-center">
+                        <button class="btn btn-primary" type="submit">保存</button>
+                        <span class="btn btn-white" onclick="history.go(-1)">返回</span>
+                    </div>
+                </div>
+                <?php ActiveForm::end(); ?>
+            </div>
+        </div>
     </div>
-<?=Html::jsFile(Yii::$app->request->baseUrl.'/js/grid.js')?>
-<?=Html::jsFile(Yii::$app->request->baseUrl.'/js/common.js')?>
-<?=Html::jsFile(Yii::$app->request->baseUrl.'/js/purchase.js')?>
+</div>
+
+<?php
+$js = <<<JS
+$(document).on('change', 'select', function(){
+    var selectnum = $("#w1 option:selected").text();//监听select改变，获取下拉选项值
+
+   var string_id=$(this).attr('id');
+    var number = document.getElementById(string_id).value;
+        //alert (number);
+    if(string_id.indexOf("-")){
+       var sid=string_id.split("-");
+       var url = '/backend/goods/getgoods';
+       //var url = 'http://localhost/backend/yanpei/getgoods';
+
+    	$.ajax({
+    	    async:false,
+    		type : 'post',
+    		cache:false,
+           url:url,
+           dataType : 'json',
+    		data:{'number':number},   //传值到控制器，获取相应数据
+    		success : function(data){
+               $("#invoiceinfo-invoiceinfo-"+sid[2]+"-name").val(data[0]['name']);
+          	   //var obj = JSON.parse(data);    //解析从控制器传来的数据（此时是数组）
+               //alert(document.getElementById("invoiceinfo-name-1-astigmia").value);
+               //document.getElementById("invoiceinfo-goodsinfo-"+sid[2]+"-degrees").value = data[0]['degrees'];
+           	   //$("#input-degrees").val(obj[0]['degrees']);//解析后的数据相应值放到对应ID的文本框中
+           	   $("#invoiceinfo-invoiceinfo-"+sid[2]+"-degrees").val(data[0]['degrees']);
+           		$("#invoiceinfo-invoiceinfo-"+sid[2]+"-astigmia").val(data[0]['astigmia']);
+           		$("#invoiceinfo-invoiceinfo-"+sid[2]+"-price").val(data[0]['saleprice']);
+    		},
+    	       error: function(XMLHttpRequest, textStatus, errorThrown) {
+                                   //alert (errorThrown);
+                                  	alert(XMLHttpRequest.status);
+      					},
+    		});
+   }
+});
+
+$("#invoices-total_amount").click(function () {
+    var toutelamou = 0;
+    for (var i = 0; i < 10; i++) {
+    //alert($("#invoiceinfo-invoiceinfo-"+i+"-saleprice").val());
+        if($("#invoiceinfo-invoiceinfo-"+i+"-price").length>0){
+           toutelamou += $("#invoiceinfo-invoiceinfo-"+i+"-price").val()*$("#invoiceinfo-invoiceinfo-"+i+"-qty").val();
+        }
+    }
+    //alert(toutelamou);
+    $("#invoices-total_amount").val(toutelamou);
+   // $("#invoices-rp_amount").val(toutelamou);
+});
+$("#invoices-rp_amount").change(function () {
+    var disamount = 0;
+    //alert($("#invoices-dis_amount").val());
+           disamount = $("#invoices-total_amount").val()-$("#invoices-rp_amount").val();
+    //alert(toutelamou);
+    $("#invoices-dis_amount").val(disamount);
+});
+
+JS;
+$this->registerJs($js);
+?>
